@@ -27,7 +27,7 @@ def inference(model_inputs:dict) -> dict:
         return {'message': "No text provided"}
     
     # Run the model
-    result = pipeline({"question": question, "context": text})
+    result = pipeline({"question": question, "context": text})['answer']
 
     # Return the results as a dictionary
     return result
