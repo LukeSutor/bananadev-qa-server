@@ -1,4 +1,4 @@
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering, pipeline
 import torch
 
 # Init is ran on server startup
@@ -7,7 +7,11 @@ def init():
     global model
     
     device = 0 if torch.cuda.is_available() else -1
-    model = pipeline('fill-mask', model='bert-base-uncased', device=device)
+    ckpt = "mrm8488/longformer-base-4096-finetuned-squadv2"
+    tokenizer = AutoTokenizer.from_pretrained(ckpt)
+    mod = AutoModelForQuestionAnswering.from_pretrained(ckpt)
+
+    model = pipeline("question-answering", model=mod, tokenizer=tokenizer, device=device)
 
 # Inference is ran for every server call
 # Reference your preloaded global model variable here.
@@ -15,12 +19,15 @@ def inference(model_inputs:dict) -> dict:
     global model
 
     # Parse out your arguments
-    prompt = model_inputs.get('prompt', None)
-    if prompt == None:
-        return {'message': "No prompt provided"}
+    question = model_inputs.get('question', None)
+    text = model_inputs.get('text', None)
+    if question is None:
+        return {'message': "No question provided"}
+    if text is None:
+        return {'message': "No text provided"}
     
     # Run the model
-    result = model(prompt)
+    result = pipeline({"question": question, "context": text})
 
     # Return the results as a dictionary
     return result
