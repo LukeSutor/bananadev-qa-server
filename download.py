@@ -9,7 +9,7 @@ def download_model():
     tokenizer = AutoTokenizer.from_pretrained(ckpt)
     model = AutoModelForQuestionAnswering.from_pretrained(ckpt)
 
-    pipeline("question-answering", model=model, tokenizer=tokenizer, device=device)
+    pipeline("question-answering", model=model, tokenizer=tokenizer)
 
 if __name__ == "__main__":
     download_model()
