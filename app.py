@@ -31,8 +31,23 @@ def handler(context: dict, request: Request) -> Response:
             json={"text": "Question and text fields required"}, 
             status=200
         )
+    
     model = context.get("model")
-    output = model({"question": question, "context": text})
+
+    # Check if the text wordcount is over 3000 words, and chunk if necessary
+    wordcount = len(text.split(" "))
+    if wordcount < 3000:
+        output = model({"question": question, "context": text})
+    else:
+        max_prob = -1
+        output = {}
+        for i in range((wordcount // 3000) + 1):
+            curr_output = model({"question": question, "context": " ".join(text.split()[3000 * i:3000 * (i + 1)])})
+            # Update the output for the max score
+            if curr_output['score'] > max_prob:
+                max_prob = curr_output['score']
+                output = curr_output
+
 
     return Response(
         json = {"output": output}, 

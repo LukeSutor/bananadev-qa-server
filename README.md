@@ -1,14 +1,4 @@
-# My Potassium App
-This is a Potassium HTTP server, created with `banana init` CLI
-
-### Testing
-Start a local dev server with `banana dev`
-
-### Deployment
-1. Create empty repo on [Github](https://github.com)
-2. Push this repo to github
-```
-git remote add origin https://github.com/{username}/{repo-name}.git
-```
-3. [Log into Banana](https://app.banana.dev/onboard)
-4. Select this repo to build and deploy!
+# QA Model
+This is the question answering backend server for my [semantic search extension]("https://github.com/LukeSutor/semantic-search-extension) project.  
+The model can be found [here]("https://huggingface.co/mrm8488/longformer-base-4096-finetuned-squadv2/tree/main") on HuggingFace.  
+The server is deployed to [banana.dev]("https://www.banana.dev/").

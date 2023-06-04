@@ -1,6 +1,4 @@
 # This file runs during container build time to get model weights built into the container
-
-# In this example: A Huggingface BERT model
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering, pipeline
 
 def download_model():
