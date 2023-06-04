@@ -1,0 +1,17 @@
+{
+    "name": "",
+    "category": "",
+    "example_input": {
+        "question": "Why did the chicken cross the road?",
+        "text": "The chicken crossed the road to get to the other side."
+    },
+    "example_output": {
+        "output": {
+            "score": 0.7949211597442627, 
+            "start": 29, 
+            "end": 53, 
+            "answer": "to get to the other side"
+        }
+    },
+    "version": "1"
+}

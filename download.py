@@ -1,8 +1,6 @@
-# In this file, we define download_model
-# It runs during container build time to get model weights built into the container
+# This file runs during container build time to get model weights built into the container
 
 # In this example: A Huggingface BERT model
-
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering, pipeline
 
 def download_model():
@@ -11,7 +9,7 @@ def download_model():
     tokenizer = AutoTokenizer.from_pretrained(ckpt)
     model = AutoModelForQuestionAnswering.from_pretrained(ckpt)
 
-    pipeline("question-answering", model=model, tokenizer=tokenizer)
+    pipeline("question-answering", model=model, tokenizer=tokenizer, device=device)
 
 if __name__ == "__main__":
     download_model()

@@ -1,33 +1,43 @@
+from potassium import Potassium, Request, Response
+
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering, pipeline
 import torch
 
-# Init is ran on server startup
-# Load your model to GPU as a global variable here using the variable name "model"
+app = Potassium("my_app")
+
+# @app.init runs at startup, and loads models into the app's context
+@app.init
 def init():
-    global model
-    
     device = 0 if torch.cuda.is_available() else -1
     ckpt = "mrm8488/longformer-base-4096-finetuned-squadv2"
     tokenizer = AutoTokenizer.from_pretrained(ckpt)
-    mod = AutoModelForQuestionAnswering.from_pretrained(ckpt)
+    model = AutoModelForQuestionAnswering.from_pretrained(ckpt)
 
-    model = pipeline("question-answering", model=mod, tokenizer=tokenizer, device=device)
+    pipe = pipeline("question-answering", model=model, tokenizer=tokenizer, device=device)
+   
+    context = {
+        "model": pipe
+    }
 
-# Inference is ran for every server call
-# Reference your preloaded global model variable here.
-def inference(model_inputs:dict) -> dict:
-    global model
+    return context
 
-    # Parse out your arguments
-    question = model_inputs.get('question', None)
-    text = model_inputs.get('text', None)
-    if question is None:
-        return {'message': "No question provided"}
-    if text is None:
-        return {'message': "No text provided"}
-    
-    # Run the model
-    result = pipeline({"question": question, "context": text})['answer']
+# @app.handler runs for every call
+@app.handler()
+def handler(context: dict, request: Request) -> Response:
+    question = request.json.get("question")
+    text = request.json.get("text")
+    if question is None or text is None:
+        return Response(
+            json={"text": "Question and text fields required"}, 
+            status=200
+        )
+    model = context.get("model")
+    output = model({"question": question, "context": text})
 
-    # Return the results as a dictionary
-    return result
+    return Response(
+        json = {"output": output}, 
+        status=200
+    )
+
+if __name__ == "__main__":
+    app.serve()
